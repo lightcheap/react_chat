@@ -21,6 +21,16 @@
   margin-bottom: 8px;
   /* 長い単語が領域をはみださないように */
   word-break: break-word;
+  max-width: 80%;
+}
+
+.my-message {
+  background-color: #bd2424;
+  align-self: flex-end;
+}
+
+.other-message {
+  align-self: flex-start;
 }
 
 .input-area {
