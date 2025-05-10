@@ -62,11 +62,13 @@ function App() {
     }
   };
 
+  // マウント時にメッセージを取得
   useEffect(() => {
     // コンポーネントがマウントされたときにメッセージを取得
     fetchMessages();
   }, []);
 
+  // メッセージが更新されたとき動作する
   useEffect(() => {
     // メッセージが更新されたらスクロールを最下部に移動
     if (messageAreaRef.current) {
