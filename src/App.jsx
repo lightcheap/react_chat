@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, use } from 'react';
 import './App.css'
 
 function App() {
@@ -6,6 +6,46 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const messageAreaRef = useRef(null); // メッセージエリアの参照を作成
+
+  // メッセージ取得API
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch('/api/messages');
+
+      if (!response.ok) {
+        console.error('エラー： ${response.status}');
+        return
+      }
+      const data = await response.json();
+      console.log('メッセージ取得成功:', data)
+      setMessages(data)
+    } catch (error) {
+      console.error('メッセージ取得失敗:', error);
+    }
+  }
+
+  const sendMessage = async (messageText) => {
+    try {
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: messageText }),
+      });
+
+      if (!response.ok) {
+        console.error('エラー： ${response.status}');
+        return
+      }
+
+      const data = await response.json();
+      console.log('メッセージ送信成功:', data)
+      fetchMessages(); // メッセージを再取得して更新
+    } catch (error) {
+      console.error('メッセージ送信失敗:', error);
+    }
+  }
 
   // メッセージ入力関数
   const handleInputChange = (event) => {
@@ -15,11 +55,17 @@ function App() {
   // メッセージ送信関数
   const handleSendMessage = () => {
     if (inputValue.trim() !== '') {
+      sendMessage(inputValue); // メッセージ送信APIを呼び出す
       // メッセージが自分のものであることを示すプロパティを追加
-      setMessages([...messages, { text: inputValue, isMine: true }]);
+      // setMessages([...messages, { text: inputValue, isMine: true }]);
       setInputValue(''); // 入力フィールドをクリア
     }
   };
+
+  useEffect(() => {
+    // コンポーネントがマウントされたときにメッセージを取得
+    fetchMessages();
+  }, []);
 
   useEffect(() => {
     // メッセージが更新されたらスクロールを最下部に移動
